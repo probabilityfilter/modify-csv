@@ -3,46 +3,61 @@
 import csv
 import timeit
 
+INPUT_FILENAME = "Water 4 tags 1yr.csv"
+OUTPUT_FILENAME = "Water 4 tags 1yr SMALL.csv"
+ROW_COUNT = 500024  # Memory Error when ROW_COUNT > 0.5 mil because of List to np.array conversion
+VERBOSE = False
+
+def readCSV(filename, verbose = False):
+    header = []
+    rows = []
+
+    with open(filename, 'r') as csvfile:
+        csvreader = csv.reader(csvfile)
+
+        # extract field names through first row
+        header = next(csvreader)
+
+        # extract data one row at a time
+        for row in csvreader:
+            rows.append(row)
+        if verbose: print("Total no. of rows: {0}".format(csvreader.line_num))
+
+    if verbose: print('Field names are:' + ', '.join(field for field in header))
+    if verbose:
+        print('\nFirst 5 rows are:\n')
+        for row in rows[:5]:
+            # parsing each column of a row
+            for col in row:
+                print("%10s" % col),
+            print('\n')
+    return header, rows
+
+
+def writeCSV(filename, headerRow, dataRows, rowCount, verbose = False):
+    if rowCount%4 != 0: # 4 = number of unique tags
+        rowCount = rowCount//4
+
+    with open(filename, 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+
+        # write the fields
+        csvwriter.writerow(headerRow)
+
+        # write the data rows
+        csvwriter.writerows(dataRows[:rowCount])
+
+
+def main():
+    verbose = VERBOSE
+    fields, rows = readCSV(INPUT_FILENAME, verbose)
+    writeCSV(OUTPUT_FILENAME, fields, rows, ROW_COUNT, verbose)
+
+
 start_time = timeit.default_timer()
 
-# READ SECTION
-filename = "Water 4 tags 1yr.csv"
-
-# initialize column names/titles and rows list
-fields = []
-rows = []
-
-with open(filename, 'r') as csvfile:
-    csvreader = csv.reader(csvfile)
-
-    # extract field names through first row
-    fields = next(csvreader)
-
-    # extract data one row at a time
-    for row in csvreader:
-        rows.append(row)
-    print("Total no. of rows: %d" % (csvreader.line_num))
-
-print('Field names are:' + ', '.join(field for field in fields))
-print('\nFirst 5 rows are:\n')
-
-for row in rows[:5]:
-    # parsing each column of a row
-    for col in row:
-        print("%10s" % col),
-    print('\n')
-
-# WRITE SECTION
-filename2 = "test_data.csv"
-
-with open(filename2, 'w', newline='') as csvfile2:
-    csvwriter = csv.writer(csvfile2)
-
-    # write the fields
-    csvwriter.writerow(fields)
-
-    # write the data rows
-    csvwriter.writerows(rows[:124])  # only multiples of 4 since there are 4 tags
+if __name__ == "__main__":
+    main()
 
 elapsed = timeit.default_timer() - start_time
 print(elapsed)
