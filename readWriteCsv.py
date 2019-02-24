@@ -1,35 +1,48 @@
-# importing csv module
+# Read from a csv and write few rows to another csv
+# Not special once you do it but great for a beginner
 import csv
+import timeit
 
-# csv file name
-filename = "test csv.csv"
+start_time = timeit.default_timer()
 
-# initializing the titles and rows list
+# READ SECTION
+filename = "Water 4 tags 1yr.csv"
+
+# initialize column names/titles and rows list
 fields = []
 rows = []
 
-# reading csv file
 with open(filename, 'r') as csvfile:
-    # creating a csv reader object
     csvreader = csv.reader(csvfile)
 
-    # extracting field names through first row
+    # extract field names through first row
     fields = next(csvreader)
 
-    # extracting each data row one by one
+    # extract data one row at a time
     for row in csvreader:
         rows.append(row)
-
-    # get total number of rows
     print("Total no. of rows: %d" % (csvreader.line_num))
 
-# printing the field names
 print('Field names are:' + ', '.join(field for field in fields))
-
-# printing first 5 rows
 print('\nFirst 5 rows are:\n')
+
 for row in rows[:5]:
     # parsing each column of a row
     for col in row:
         print("%10s" % col),
     print('\n')
+
+# WRITE SECTION
+filename2 = "test_data.csv"
+
+with open(filename2, 'w', newline='') as csvfile2:
+    csvwriter = csv.writer(csvfile2)
+
+    # write the fields
+    csvwriter.writerow(fields)
+
+    # write the data rows
+    csvwriter.writerows(rows[:124])  # only multiples of 4 since there are 4 tags
+
+elapsed = timeit.default_timer() - start_time
+print(elapsed)
