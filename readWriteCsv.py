@@ -2,10 +2,20 @@
 # Not special once you do it but great for a beginner
 import csv
 import timeit
+from tkinter import filedialog
+from tkinter import *
+import ntpath
 
-INPUT_FILENAME = "Water 4 tags 1yr.csv"
+
+root = Tk()#.withdraw()  # we don't want a full GUI, so keep the root window from appearing
+root.filename = filedialog.askopenfilename(initialdir="/", title="Select file",
+                                           filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
+print(root.filename)
+print(ntpath.basename(root.filename))
+
+INPUT_FILENAME = ntpath.basename(root.filename)  #"Water 4 tags 1yr.csv"
 OUTPUT_FILENAME = "Water 4 tags 1yr SMALL.csv"
-ROW_COUNT = 500024  # Memory Error when ROW_COUNT > 0.5 mil because of List to np.array conversion
+ROW_COUNT = 1024  # Memory Error when ROW_COUNT > 0.5 mil because of List to np.array conversion
 VERBOSE = False
 
 def readCSV(filename, verbose = False):
